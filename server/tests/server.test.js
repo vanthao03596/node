@@ -143,3 +143,49 @@ describe('DELETE /todos/:id', () => {
       .end(done)
   })
 })
+
+describe('PATCH /todos/:id', () => {
+  it('should update todo text', done => {
+    let text = 'Test todo text'
+    request(app)
+      .patch(`/todos/${todos[0]._id.toHexString()}`)
+      .expect(200)
+      .send({text, completed: true})
+      .expect(res => {
+        expect(res.body.todo.text).toBe(text)
+        expect(res.body.todo.completed).toBe(true)
+        expect(typeof res.body.todo.completedAt).toBe('number')
+      })
+      .end(done)
+  })
+
+  it('should clear todo completedAt if todo is not completed', done => {
+    let text = 'Test todo text'
+    request(app)
+      .patch(`/todos/${todos[0]._id.toHexString()}`)
+      .expect(200)
+      .send({text, completed: false})
+      .expect(res => {
+        expect(res.body.todo.text).toBe(text)
+        expect(res.body.todo.completed).toBe(false)
+        expect(res.body.todo.completedAt).toBeFalsy()
+      })
+      .end(done)
+  })
+
+  it('should return 404 if todo not found', done => {
+    let hexId = new ObjectID().toHexString()
+
+    request(app)
+      .patch(`/todos/${hexId}`)
+      .expect(404)
+      .end(done)
+  })
+
+  it('should return 404 for non-object ids', done => {
+    request(app)
+      .patch('/todos/123abc')
+      .expect(404)
+      .end(done)
+  })
+})
