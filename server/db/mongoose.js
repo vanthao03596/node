@@ -1,15 +1,23 @@
 const mongoose = require('mongoose')
 
 mongoose.Promise = global.Promise
+let opts = {
+  useNewUrlParser: true,
+}
+
+let uri = process.env.DB_LOCALHOST
+
+if (process.env.APP_ENV && process.env.APP_ENV === 'production') {
+  opts['auth'] = {
+    user: process.env.MONGO_DB_USER || '',
+    password: process.env.MONGO_DB_PASSWORD || '',
+  }
+  uri = process.env.MONGO_DB_URI
+}
+
 mongoose.connect(
-  process.env.MONGODB_URI || 'mongodb://localhost:27017/TodoApp',
-  {
-    auth: {
-      user: process.env.MONGO_DB_USER || '',
-      password: process.env.MONGO_DB_PASSWORD || '',
-    },
-    useNewUrlParser: true,
-  },
+  uri,
+  opts,
 )
 
 module.exports = {
