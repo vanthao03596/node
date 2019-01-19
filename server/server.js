@@ -2,6 +2,7 @@ require('dotenv').config()
 const express = require('express')
 const bodyParser = require('body-parser')
 const {ObjectID} = require('mongodb')
+const cors = require('cors')
 const _ = require('lodash')
 
 const {mongoose} = require('./db/mongoose')
@@ -12,6 +13,7 @@ const app = express()
 
 const port = process.env.PORT || 3000
 app.use(bodyParser.json())
+app.use(cors())
 app.post('/todos', (req, res) => {
   let todo = new Todo({
     text: req.body.text,
